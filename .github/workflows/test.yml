@@ -27,7 +27,7 @@ on:
       - main
 
 jobs:
-  untestit_test:
+  unit_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -37,7 +37,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
           check-latest: true
-      - run: go test./...
+      - run: go test ./...
 
   e2e_test:
     runs-on: ubuntu-latest
