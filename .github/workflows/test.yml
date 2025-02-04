@@ -27,49 +27,59 @@ on:
       - main
 
 jobs:
-  unit_test:
-    name: unit tests
+  untestit_test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        go-version:
-          - 1.22.x
-          - 1.23.x
-
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Set up Go
-        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
         with:
-          go-version: ${{ matrix.go-version }}
+          persist-credentials: false
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
+        with:
+          go-version-file: 'go.mod'
           check-latest: true
+      - run: go test./...
 
-      - name: Cache Modules
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+  e2e_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+          persist-credentials: false
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
+        with:
+          go-version-file: 'go.mod'
+          check-latest: true
+      - uses: LocalStack/setup-localstack@a9b3e54ee0052a2f40a4eb4ca8b39dfd3bc2bc65 # v0.2.3
+        with:
+          image-tag: 4.1.0@sha256:cd576d5d92a8506702a920e7fbc97bf3c8452143f2487ae421ad16e37d2d3fab
+      - run: go test -tags e2e
 
-      - run: |
-          for submodule in \
-            . \
-            pkg/signature/kms/cliplugin \
-            pkg/signature/kms/aws \
-            pkg/signature/kms/azure \
-            pkg/signature/kms/gcp \
-            pkg/signature/kms/hashivault; do
-            pushd $submodule
-
-            go mod tidy
-            go build -v ./...
-            go test -v ./...
-
-            popd
-          done
-
-      - name: Ensure no files were modified as a result of the build
-        run: git update-index --refresh && git diff-index --quiet HEAD -- || git diff --exit-code
+  cosign_test:
+    runs-on: ubuntu-latest
+    env:
+      COSIGN_PASSWORD: 123
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          path: sigstore-kms-awskms
+      - run: go install -C sigstore-kms-awskms
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
+        with:
+          go-version-file: 'go.mod'
+          check-latest: true
+      - uses: LocalStack/setup-localstack@a9b3e54ee0052a2f40a4eb4ca8b39dfd3bc2bc65 # v0.2.3
+        with:
+          image-tag: 4.1.0@sha256:cd576d5d92a8506702a920e7fbc97bf3c8452143f2487ae421ad16e37d2d3fab
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        name: checkout ramonpetgrave64/cosign/cmd/cosign@cliplugin-no-builtin-aws
+        with:
+          persist-credentials: false
+          repository: ramonpetgrave64/cosign
+          ref: cliplugin-no-builtin-aws
+          path: cosign
+      - run: go install -C cosign/cmd/cosign
+      - name: create key
+        run: |
+          cosign generate-key-pair --kms awskms:///alias/MyTestKey
+          cat cosign.pub
