@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/kms v1.37.16
 	github.com/jellydator/ttlcache/v3 v3.3.0
 	github.com/sigstore/sigstore v1.8.12
+	github.com/sigstore/sigstore/pkg/signature/kms/cliplugin v0.0.0-20250203224825-41e4a58657b5
 	github.com/stretchr/testify v1.10.0
 )
 
