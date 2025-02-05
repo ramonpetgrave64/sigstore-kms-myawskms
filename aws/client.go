@@ -37,14 +37,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/kms/types"
 	"github.com/jellydator/ttlcache/v3"
 	"github.com/sigstore/sigstore/pkg/signature"
-	sigkms "github.com/sigstore/sigstore/pkg/signature/kms"
 )
-
-func init() {
-	sigkms.AddProvider(ReferenceScheme, func(ctx context.Context, keyResourceID string, _ crypto.Hash, _ ...signature.RPCOption) (sigkms.SignerVerifier, error) {
-		return LoadSignerVerifier(ctx, keyResourceID)
-	})
-}
 
 const (
 	cacheKey = "signer"
