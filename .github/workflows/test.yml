@@ -92,7 +92,7 @@ jobs:
       - name: sign
         run: |
           echo "gundam" > blob.txt
-          cosign sign-blob --tlog-upload=false --key ${{ env.KEY }} blob.txt | sig.txt
+          cosign sign-blob --tlog-upload=false --key ${{ env.KEY }} blob.txt | tee sig.txt
       - name: verify
         run: |
           cosign verify-blob --insecure-ignore-tlog --key ${{ env.KEY }} --signature ./sig.txt ./blob.txt
