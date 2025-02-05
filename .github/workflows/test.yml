@@ -27,12 +27,12 @@ on:
       - main
 
 env:
-  COSIGN_PASSWORD: 123
   AWS_ACCESS_KEY_ID: test
   AWS_SECRET_ACCESS_KEY: test
   AWS_REGION: us-east-1
   AWS_ENDPOINT: localhost:4566
   AWS_TLS_INSECURE_SKIP_VERIFY: 1
+  KEY: awskms://localhost:4566/alias/MyTestKey
 
 jobs:
   unit_test:
@@ -87,5 +87,18 @@ jobs:
       - run: go install -C cosign/cmd/cosign
       - name: create key
         run: |
-          cosign generate-key-pair --kms awskms:///alias/MyTestKey
+          cosign generate-key-pair --kms ${{ env.KEY }}
           cat cosign.pub
+      - name: sign
+        run: |
+          echo "gundam" > blob.txt
+          cosign sign-blob --tlog-upload=false --key ${{ env.KEY }} blob.txt | sig.txt
+      - name: verify
+        run: |
+          cosign verify-blob --insecure-ignore-tlog --key ${{ env.KEY }} --signature ./sig.txt ./blob.txt
+      - name: "test: attempt to verify bad data"
+        run: |
+          echo "X" >> blob.txt
+          cosign verify-blob --insecure-ignore-tlog --key ${{ env.KEY }} --signature ./sig.txt ./blob.txt && \
+          echo "successfully verified" && exit 1 || \
+          echo "failed to verify" && exit 0
