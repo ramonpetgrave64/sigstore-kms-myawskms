@@ -20,11 +20,7 @@ permissions:
 
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
 
 env:
   AWS_ACCESS_KEY_ID: test
