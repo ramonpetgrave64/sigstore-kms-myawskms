@@ -20,11 +20,8 @@ permissions:
 
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   AWS_ACCESS_KEY_ID: test
