@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.4
 	github.com/aws/aws-sdk-go-v2/service/kms v1.37.16
 	github.com/jellydator/ttlcache/v3 v3.3.0
-	github.com/sigstore/sigstore v1.8.13-0.20250212165910-a235f115af37
+	github.com/sigstore/sigstore v1.8.15
 	github.com/stretchr/testify v1.10.0
 )
 
