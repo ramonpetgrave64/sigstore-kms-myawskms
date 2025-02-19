@@ -65,23 +65,16 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-          path: sigstore-kms-awskms
-      - run: go install -C sigstore-kms-awskms
       - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
         with:
-          go-version-file: './sigstore-kms-awskms/go.mod'
+          go-version-file: './go.mod'
           check-latest: true
+      - name: install plugin
+        run: go install ./
+      - run: go install github.com/sigstore/cosign/v2/cmd/cosign@v2.4.3
       - uses: LocalStack/setup-localstack@a9b3e54ee0052a2f40a4eb4ca8b39dfd3bc2bc65 # v0.2.3
         with:
           image-tag: 4.1.0@sha256:cd576d5d92a8506702a920e7fbc97bf3c8452143f2487ae421ad16e37d2d3fab
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        name: checkout ramonpetgrave64/cosign/cmd/cosign@cliplugin-no-builtin-aws
-        with:
-          persist-credentials: false
-          repository: ramonpetgrave64/cosign
-          ref: cliplugin-no-builtin-aws
-          path: cosign
-      - run: go install -C cosign/cmd/cosign
       - name: create key
         run: |
           cosign generate-key-pair --kms ${{ env.KEY }}
