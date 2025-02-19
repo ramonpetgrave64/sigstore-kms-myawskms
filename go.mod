@@ -1,4 +1,4 @@
-module github.com/ramonpetgrave64/sigstore-kms-awskms
+module github.com/ramonpetgrave64/sigstore-kms-myawskms
 
 go 1.22.0
 

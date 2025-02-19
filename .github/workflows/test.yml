@@ -29,7 +29,7 @@ env:
   AWS_REGION: us-east-1
   AWS_ENDPOINT: localhost:4566
   AWS_TLS_INSECURE_SKIP_VERIFY: 1
-  KEY: awskms://localhost:4566/alias/MyTestKey
+  KEY: myawskms://localhost:4566/alias/MyTestKey
 
 jobs:
   unit_test:

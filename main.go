@@ -7,7 +7,7 @@ import (
 
 	"github.com/sigstore/sigstore/pkg/signature/kms"
 
-	"github.com/ramonpetgrave64/sigstore-kms-awskms/aws"
+	"github.com/ramonpetgrave64/sigstore-kms-myawskms/aws"
 	"github.com/sigstore/sigstore/pkg/signature/kms/cliplugin/common"
 	"github.com/sigstore/sigstore/pkg/signature/kms/cliplugin/handler"
 )
